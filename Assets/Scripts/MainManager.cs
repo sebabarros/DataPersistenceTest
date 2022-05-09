@@ -10,14 +10,15 @@ public class MainManager : MonoBehaviour
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
-
-    
+       
 
     public Text ScoreText;
+    public Text highScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+    private int highScorePoints;
     
     private bool m_GameOver = false;
 
@@ -27,6 +28,7 @@ public class MainManager : MonoBehaviour
     void Start()
     {
         AddPoint(0);
+        highScorePoints = GameManager.Instance.highScore;
 
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
@@ -42,6 +44,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        highScoreText.text = GameManager.Instance.highScorePlayerName + " " + $"High Score : {GameManager.Instance.highScore}";
     }
 
     private void Update()
@@ -74,6 +78,14 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = GameManager.Instance.playerName + " " + $"Score : {m_Points}";
+    
+        if(m_Points > highScorePoints)
+        {
+            highScorePoints = m_Points;
+            GameManager.Instance.highScore = highScorePoints;
+            highScoreText.text = GameManager.Instance.playerName + " " + $"High Score : {GameManager.Instance.highScore}";
+            GameManager.Instance.Save();
+        }
     }
 
     public void GameOver()
